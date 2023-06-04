@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Enter titile here  -->
+
+    <title>Equation Engine</title>
+
+    <!-- Enter linking stylesheet here  -->
+
+    <link rel="stylesheet" href="quadratic.css">
+    <script src="quadratic.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <section class="sidebar" id="leftCol">
+            <button id="drawer-close" class="drawer-close">Close Menu &times;</button>
+            <h2>Features Available</h2>
+            <ul class="navigation-list">
+                <li><a href="../index.html">Home Page</a></li>
+                <li><a href="addition.html">Addition or Subtraction of Matrix</a></li>
+                
+                <li><a href="multiplication.html">Matrix multiplication</a></li>
+                <li><a href="quadratic.html">Find Roots of quadratic equation</a></li>
+            </ul>
+            <div class="signup-section">
+                <h3>New user?</h3>
+                <h4>Sign up today for more features!</h4>
+                <a href="sign-up.html"><div class="nav-button this-button"> Sign Up</div></a>
+                <div class="already-user">
+                    <div class="already-user-left">
+                        <h6>Already a User?</h4>
+                    </div>
+                    <div class="already-user-right">
+                        <h6 class="signIn"><a>Sign In</a> </h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right section  -->
+        <section class="main-content">
+            <button id="drawer-toggle" class="drawer-toggle">&#9776;</button>
+            <div class="header">
+                <h1 class="heading">Find Roots of quadratic equation:</h1>
+                <h2 class="sub-heading">Quadratic Quest: 
+                    The Ultimate Root-Finding Adventure</h2>
+            </div>
+
+            <section class="instructions">
+                <h3 class="sub-heading">Instructions:</h3>
+    <p><strong>The quadratic equation must be of the form: ax² + bx + c = 0</strong></p>
+    <p>Follow these simple steps to get started:</p>
+    <ol>
+        <li>1. Enter the coefficients <strong>a</strong>, <strong>b</strong>, and <strong>c</strong> for your equation in the respective input fields.</li>
+        <li>2. Click the <strong>Calculate</strong> button to find the roots of the equation.</li>
+        <li>3. The roots will be displayed below in the "Roots of the equation" section.</li>
+        <li>> If you wish to clear the input values and results, click the <strong>Clear</strong> button.</li>
+    </ol>
+    <p>--Please note that the roots can be real and distinct, real and equal, or complex numbers depending on the discriminant value.</p>
+            </section>
+            <!-- HAVE YOUR STUFF HERE  -->
+    
+            <section class="quadratic-area">
+                <div class="equation">
+                    <input type="number" id="a" placeholder="a">
+                    <span>x² + </span>
+                    <input type="number" id="b" placeholder="b">
+                    <span>x + </span>
+                    <input type="number" id="c" placeholder="c">
+                    <span> = 0</span>
+                </div>
+                <div class="buttons">
+                    <button onclick="clearInputValues()">Clear</button>
+                    <button onclick="calculateRoots()">Calculate</button>
+                    
+                </div>
+                <div class="result">
+                    <h2>Roots of the equation:</h2>
+                    <p id="output"></p>
+                </div>
+            </section>
+            
+
+        </section>
+
+        <!-- footer  -->
+
+
+
+    </div>
+    <footer class="footer">
+        <div class="footer-left">
+            <h3 class="name">Equation Engine</h3>
+            <p class="tagline">Crunching numbers so you don't have to</p>
+            <div class="credits">
+                <p>Submitted to: Anthony Aighobahi</p>
+                <p>Submitted by: Gursahib Singh</p>
+            </div>
+        </div>
+        <div class="footer-right">
+            <h3>Have any suggestions on how can we improve?</h3>
+            <p>Please write the point on what we can improve?</p>
+            <div class="email-suggestion">
+                <input type="text" placeholder="Your suggestion...">
+                <button class="send-button">
+                    <span class="send-icon"><img src="../assets/images/send.png"></span>
+                    <span class="send-text">Send</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById("drawer-toggle").addEventListener("click", function () {
+        document.getElementById("leftCol").classList.toggle("open");
+        document.getElementById("drawer-toggle").classList.toggle("hidden");
+      });
+      document.getElementById("leftCol").addEventListener("click", function () {
+        document.getElementById("leftCol").classList.remove("open");
+        document.getElementById("drawer-toggle").classList.remove("hidden");
+      });
+      document.getElementById("drawer-close").addEventListener("click", function () {
+        document.getElementById("leftCol").classList.remove("open");
+      });
+      </script>
+</body>
+
+</html>

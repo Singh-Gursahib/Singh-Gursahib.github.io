@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equation Engine</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  
+  <div class="container">
+    <section class="sidebar" id="leftCol">
+      <button id="drawer-close" class="drawer-close">Close Menu &times;</button>
+      <h2>Features Available</h2>
+      <ul class="navigation-list">
+        <li><a href="index.html">Home Page</a></li>
+        <li><a href="./pages/addition.html">Addition or Subtraction of Matrix</a></li>
+        <li><a href="./pages/multiplication.html">Matrix multiplication</a></li>
+        <li><a href="./pages/quadratic.html">Find Roots of quadratic equation</a></li>
+      </ul>
+      <div class="signup-section">
+        <h3>New user?</h3>
+        <h4>Sign up today for more features!</h4>
+        <a href="./pages/sign-up.html"><div class="nav-button this-button"> Sign Up</div></a>
+        <div class="already-user">
+          <div class="already-user-left">
+            <h6>Already a User?</h4>
+          </div>
+          <div class="already-user-right">
+            <h6 class="signIn"><a>Sign In</a> </h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right section  -->
+    <section class="main-content" id="mainContent">
+      <button id="drawer-toggle" class="drawer-toggle">&#9776;</button>
+      <div class="header">
+        <h2>Welcome To</h2>
+        <h1 class="name">Equation Engine</h1>
+      </div>
+        <!-- Description of the website and its purpose -->
+
+      <div class="description">
+        <p>This website is dedicated to solving general matrix problems, but has the potential to solve a wide range of
+          mathematical problems using advanced algorithms. This website was created as part of a project for the
+          COMP2680 course at TRU in Kamloops, in the year 2023.</p>
+        <p>My aim is to provide an easy-to-use platform for solving complex mathematical problems, and I hope you find
+          EquationEngine helpful in your endeavors.</p>
+      </div>
+      <hr>
+        <!-- Instructions on how to use the website with a video tutorial -->
+      <div class="instructions">
+        <div class="video">
+          <iframe  src="https://www.youtube.com/embed/D0UnqGm_miA" title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+        <div class="text">
+          <h3 class="heading-fonts">How to use Equation Engine?</h3>
+          <p>Want to become a matrix mastermind? Our video tutorial covers everything from matrix addition to finding
+            roots using the quadratic formula. Get ready to impress with your math skills and become a pro at matrix
+            operations. Check it out now!</p>
+        </div>
+      </div>
+        <!-- Section with available features -->
+
+      <section id="all-features">
+        <h3 class="to-do-head">What do you want to do today?</h3>
+        <div class="feature">
+          <img src="assets/images/plus-minus.png" alt="Addition and Subtraction of Matrix">
+          <div class="feature-info">
+            <h3><a href="/pages/addition.html">Addition and Subtraction of Matrix</a></h3>
+            <h4>Feeling like a math magician? Add and subtract matrices like a pro and leave your friends in awe.</h4>
+          </div>
+        
+        </div>
+        
+        <div class="feature">
+          <img src="assets/images/grid.png" alt="Matrix multiplication">
+          <div class="feature-info">
+            <h3><a href="./pages/multiplication.html">Matrix multiplication</a> </h3>
+            <h4>Want to become a matrix mastermind? Multiply matrices and uncover hidden patterns like a boss.
+            </h4>
+          </div>
+        </div>
+        <div class="feature">
+          <img src="assets/images/roots.png" alt="Find Roots of any quadratic equation">
+          <div class="feature-info">
+            <h3><a href="./pages/quadratic.html"> Find Roots of any quadratic equation</a></h3>
+            <h4>Feeling adventurous? Use the quadratic formula to find the roots of any equation and unlock the secrets
+              of the universe (or at least the math world).
+            </h4>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- footer  -->
+
+
+
+  </div>
+  <footer class="footer">
+
+    <div class="footer-left">
+        <h3 class="name">Equation Engine</h3>
+        <p class="tagline">Crunching numbers so you don't have to</p>
+        <div class="credits">
+            <p>Submitted to: Anthony Aighobahi</p>
+            <p>Submitted by: Gursahib Singh</p>
+        </div>
+    </div>
+    <div class="footer-right">
+        <h3>Have any suggestions on how can we improve?</h3>
+        <p>Please write the point on what we can improve?</p>
+        <div class="email-suggestion">
+            <input type="text" placeholder="Your suggestion...">
+            <button class="send-button">
+                <span class="send-icon"><img src="./assets/images/send.png"></span>
+                <span class="send-text">Send</span>
+            </button>
+        </div>
+    </div>
+</footer>
+
+  <!-- JavaScript for handling the drawer toggle and close functionality -->
+
+<script>
+  document.getElementById("drawer-toggle").addEventListener("click", function () {
+  document.getElementById("leftCol").classList.toggle("open");
+  document.getElementById("drawer-toggle").classList.toggle("hidden");
+});
+document.getElementById("leftCol").addEventListener("click", function () {
+  document.getElementById("leftCol").classList.remove("open");
+  document.getElementById("drawer-toggle").classList.remove("hidden");
+});
+document.getElementById("drawer-close").addEventListener("click", function () {
+  document.getElementById("leftCol").classList.remove("open");
+});
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,865 @@
+/* Nullify all browser CSS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 100%;
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    text-decoration: none;
+    list-style: none;
+}
+
+/* Additional reset styles */
+
+html {
+    font-size: 20px;
+    font-family: 'Text';
+    line-height: 1.5;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    cursor: pointer;
+}
+
+/* MY COLOUR PALLETE  */
+:root {
+    --lightBlue: #50D0D5;
+    --darkBlue: #023653;
+    --lightGrey: #EEEEEE;
+}
+
+
+/* IMPORTING FONTS  */
+@font-face {
+    font-family: 'Name';
+    src: url('/assets/fonts/Name.ttf');
+}
+
+@font-face {
+    font-family: 'Text';
+    src: url('/assets/fonts/Text.ttf');
+}
+
+@font-face {
+    font-family: 'Headings';
+    src: url('/assets/fonts/Headings.ttf');
+}
+
+.container {
+    display: flex;
+    margin-bottom: 0;
+}
+
+.heading {
+    font-size: 60px;
+    font-family: 'Headings';
+}
+
+.sub-heading {
+    font-size: 30px;
+    font-family: 'Headings';
+}
+
+#leftCol,
+.sidebar {
+    width: 20%;
+    background-color: var(--darkBlue);
+    /* float: left; */
+    padding: 20px;
+    padding-bottom: 600px;
+}
+
+.sidebar>h2 {
+    font-size: 24px;
+    margin-top: 80px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--lightBlue);
+}
+
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    margin-left: 8px;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 12px;
+}
+
+.navigation-list li::before {
+    content: "\203A";
+    color: white;
+    position: absolute;
+    left: 0;
+}
+
+.sidebar li a {
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar li a:hover {
+    text-decoration: underline;
+}
+
+.signup-section {
+    margin-top: 125px;
+    border: 1px solid white;
+    border-radius: 15px;
+    padding: 8px;
+}
+
+.signup-section h3 {
+    color: var(--lightBlue);
+    font-size: 24px;
+    text-align: center;
+    margin: 0;
+}
+
+.signup-section h4 {
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.signup-section .nav-button {
+    width: 70%;
+    text-align: center;
+    background-color: var(--lightBlue);
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 0px auto;
+    border-radius: 15px;
+}
+
+.signup-section button:hover {
+    background-color: #000;
+}
+
+.already-user {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 20px;
+}
+
+.already-user h6 {
+    font-size: 12px;
+    color: white;
+    margin: 4px 8px;
+}
+
+.signIn {
+    text-decoration: underline;
+    margin-left: 0;
+}
+
+/* MAIN CONTENT  */
+
+.heading-fonts {
+    font-family: 'Headings', sans-serif;
+    size: 30px;
+}
+
+.main-content {
+    /* float: left; */
+    width: 80%;
+    padding: 40px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+}
+
+.header h1 {
+    font-weight: bold;
+    margin: 0;
+    text-align: left;
+    padding-top: 10;
+    color: var(--lightBlue);
+    text-shadow: 1px 1px 2px black;
+}
+
+.instructions {
+    margin-top: 30px;
+}
+
+.instructions h3 {
+    margin: 10px 0;
+}
+
+.instructions ol {
+    list-style-type: decimal;
+}
+
+/* Enter you page css here  */
+.matrix-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 0;
+}
+
+.container h2 {
+    font-family: 'Headings';
+    font-size: 1.5em;
+}
+
+.matrix-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+    margin-top: 100px;
+    vertical-align: middle;
+}
+
+.flipimg img {
+    width: 40px;
+}
+
+.matrix {
+    border-collapse: separate;
+    border-spacing: 8px;
+
+}
+
+.matrix td {
+    
+}
+
+.matrix input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding: 0;
+    border: none;
+    background-color: #50D0D5;
+    color: white;
+}
+
+.matrix input:focus {
+    outline: none;
+}
+
+div.result h2 {
+    text-align: center;
+}
+
+button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+
+
+input[type="number"] {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background-color: #50D0D5;
+    color: white;
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Hide number input arrows */
+input[type="number"] {
+    position: relative;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    right: 0;
+    top: 0;
+}
+
+/* fotter  */
+
+footer {
+    clear: both;
+    background-color: var(--darkBlue);
+    color: #fff;
+    padding: 20px;
+    margin-top: auto;
+}
+
+.footer-right {
+    font-size: 30px;
+    margin-top: 0;
+    text-align: center;
+    padding-left: 30px;
+    border-left: 2px solid white;
+}
+
+.footer-right h3 {
+    font-size: 30px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.footer-left h3 {
+    font-size: 50px;
+    margin-top: 0;
+    text-align: center;
+}
+
+h3.name {
+    font-family: 'Name', sans;
+}
+
+
+
+.footer-left p,
+.footer-right p {
+    font-size: 24px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+p.tagline {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.credits {
+    border-top: 2px solid white;
+}
+
+.credits p {
+    font-size: 20px;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.email-suggestion input[type="text"] {
+    color: #000;
+    width: 80%;
+    padding: 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 15px;
+    margin-right: 10px;
+    background-color: white;
+}
+
+.email-suggestion button {
+    width: 30%;
+    text-align: center;
+    background-color: var(--lightBlue);
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    padding: 5px 5px;
+    cursor: pointer;
+    margin: 0px auto;
+    border-radius: 15px;
+
+}
+
+.email-suggestion .send-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    width: 24px;
+}
+
+.email-suggestion .send-text {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.this-button {
+    text-align: center;
+    /* background-color: var(--lightBlue); */
+    background-color: var(--lightBlue);
+    color: #fff;
+    font-size: 24px;
+    border: none;
+    padding: 10px 10px;
+    cursor: pointer;
+    margin: 0px auto;
+    border-radius: 15px;
+}
+
+
+footer {
+    clear: "both";
+    background-color: var(--darkBlue);
+    color: #fff;
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    /* position: absolute; */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+
+/* Your existing CSS content */
+
+/* Additions */.quadratic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+}
+
+.result {
+    width: 100%;
+    text-align: center;
+}
+
+.equation {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.equation input,
+.quadratic-area input {
+    width: 100px;
+    height: 70px;
+    margin: 0 5px;
+    border: 1px solid #50D0D5;
+    background-color: #50D0D5;
+    border-radius: 8px;
+}
+
+.quadratic-area span {
+    font-size: 2em;
+}
+
+.result {
+    margin-top: 1rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-family: 'Headings';
+
+}
+
+.quadratic-area button {
+    padding: 0.5rem 1rem;
+    text-align: center;
+    background-color: var(--darkBlue);
+    color: #fff;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+}
+.result #output{
+    font-size: 1.5em;
+}
+
+
+
+
+
+/* Mobile css  */
+@media screen and (max-width: 480px) {
+
+  .drawer-toggle {
+    display: none;
+    font-size: 30px;
+    background-color: transparent;
+    color: var(--darkBlue);
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .drawer-toggle:hover {
+    background-color: var(--lightGrey);
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    transition: left 1s;
+    height: 100%;
+    z-index: 9999;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  #drawer-close {
+    display: hidden;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  #leftCol {
+    width: 100%;
+    padding-bottom: 20px;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .drawer-toggle {
+    display: block;
+    background-color: var(--darkBlue);
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .drawer-close {
+    display: block;
+    background-color: var(--lightBlue);
+    color: white;
+    font-size: 18px;
+    padding: 2px 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .sidebar.open {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    width: 80%;
+  }
+
+  .sidebar.open h2 {
+    margin-top: 5px;
+  }
+
+
+  .main-content {
+    text-align: center;
+  }
+
+  /* 22 font size  */
+  h1.heading{
+    text-align: center;
+    font-size: 32px;
+  }
+  
+  h2.sub-heading, h3.sub-heading,.feature h3, .footer h3{
+    font-size: 22px;
+  }
+
+  .footer p{
+    font-size: 18px;
+  }
+
+  .instructions li{
+    font-size: 18px;
+    text-align: left;
+    padding:0 30px;
+  }
+  .instructions {
+    text-align: center;
+  }
+
+
+.equation {
+    font-size: 10px;
+}
+.quadratic-area input {
+    width: 68px;
+    height: 58px;
+    font-size: 25px;
+}
+.result #output {
+    font-size: 1em;
+}
+
+
+
+
+  .footer {
+    display: flex;
+    position: relative;
+    /* Set the position property to relative */
+  }
+
+
+  .footer-right {
+    padding-bottom: 30px;
+    padding-right: 30px;
+    position: absolute;
+    /* Position the footer-right element using absolute positioning */
+    bottom: 0;
+
+  }
+
+
+  .footer-left,
+  .footer-right {
+    text-align: center;
+    border: none;
+  }
+
+  h3.name{
+    font-size: 40px;
+  }
+  .footer-left {
+    padding-bottom: 300px;
+  }
+
+
+  .email-suggestion input[type="text"] {
+    width: 100%;
+  }
+
+  .email-suggestion button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+/* Tablet css  */
+@media only screen and (min-width:481px) and (max-width:869px) {
+
+  .drawer-toggle {
+    display: none;
+    font-size: 30px;
+    background-color: transparent;
+    color: var(--darkBlue);
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .drawer-toggle:hover {
+    background-color: var(--lightGrey);
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    transition: left 1s;
+    height: 100%;
+    z-index: 9999;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  #drawer-close {
+    display: hidden;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  #leftCol {
+    width: 40%;
+    padding-bottom: 20px;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .drawer-toggle {
+    display: block;
+    background-color: var(--darkBlue);
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .drawer-close {
+    display: block;
+    background-color: var(--lightBlue);
+    color: white;
+    font-size: 18px;
+    padding: 2px 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .sidebar.open {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    width: 80%;
+  }
+
+  .sidebar.open h2 {
+    margin-top: 5px;
+  }
+
+
+  .main-content {
+    text-align: center;
+  }
+
+  /* 22 font size  */
+  h1.heading{
+    text-align: center;
+    font-size: 32px;
+  }
+  
+  h2.sub-heading, h3.sub-heading,.feature h3, .footer h3{
+    font-size: 22px;
+  }
+
+  .footer p{
+    font-size: 18px;
+  }
+
+  .instructions li{
+    font-size: 18px;
+    text-align: left;
+    padding:0 30px;
+  }
+  .instructions {
+    text-align: center;
+    padding: 0 30px;
+  }
+
+
+.equation {
+    font-size: 20px;
+}
+.quadratic-area input {
+    width: 68px;
+    height: 58px;
+    font-size: 35px;
+}
+.result #output {
+    font-size: 1em;
+}
+
+
+
+
+  .footer {
+    display: flex;
+    position: relative;
+    /* Set the position property to relative */
+  }
+
+
+  .footer-right {
+    padding-bottom: 30px;
+    padding-right: 30px;
+    position: absolute;
+    /* Position the footer-right element using absolute positioning */
+    bottom: 0;
+
+  }
+
+
+  .footer-left,
+  .footer-right {
+    text-align: center;
+    border: none;
+  }
+
+  h3.name{
+    font-size: 40px;
+  }
+  .footer-left {
+    padding-bottom: 210px;
+  }
+
+
+  .email-suggestion input[type="text"] {
+    width: 100%;
+  }
+
+  .email-suggestion button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+/* Desktop css  */
+@media only screen and (min-width:770px){
+#drawer-toggle {
+    color: white;
+  }
+  #drawer-close{
+    color: #023653;
+  }
+}

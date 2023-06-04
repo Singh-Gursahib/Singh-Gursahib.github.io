@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../pages/sign-up.css">
+  <title>Equation Engine - Sign Up</title>
+</head>
+<body>
+    <div class="left-section">
+        <h2>Equation Engine</h2>
+        <p>Crunching numbers so you don't have to...</p>
+        <p>This website is dedicated to solving general matrix problems, but has the potential to solve a wide range of mathematical problems using advanced algorithms. <br> This website was created as part of a project for the COMP2680 course at TRU in Kamloops, in the year 2023.
+        </p>
+        <img src="../assets/images/signup.png" alt="Signup image" />
+      </div>
+      <div class="right-section">
+        <a href="../index.html" class="home-link">Back to Homepage</a>
+        <div class="form-container">
+          <h1>Unlock the Full Power of Equation Engine</h1>
+          <p>Sign up for free and gain access to our advanced calculators and exclusive features to supercharge your mathematical journey.</p>
+          <form id="sign-up-form">
+            <input type="text" id="name" name="name" placeholder="Name" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
+            <button type="submit" id="submit-button">Sign Up</button>
+          </form>
+          <div class="separator">or</div>
+          <button class="google-signup">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" class="google-logo">
+            Sign Up with Google
+          </button>
+          <p>Already have an account? <a href="#">Log in here</a>.</p>
+        </div>
+      </div>
+  <script src="/pages/sign-up.js"></script>
+</body>
+</html>

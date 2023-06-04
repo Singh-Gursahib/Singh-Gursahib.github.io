@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Enter title here  -->
+
+    <title>Equation Engine</title>
+
+    <!-- Enter linking stylesheet here  -->
+
+    <link rel="stylesheet" href="multiplication.css">
+    <script src="multiplication.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <section class="sidebar" id="leftCol">
+            <button id="drawer-close" class="drawer-close">Close Menu &times;</button>
+            <h2>Features Available</h2>
+            <ul class="navigation-list">
+                <li><a href="../index.html">Home Page</a></li>
+                <li><a href="addition.html">Addition or Subtraction of Matrix</a></li>
+
+                <li><a href="multiplication.html">Matrix multiplication</a></li>
+                <li><a href="quadratic.html">Find Roots of quadratic equation</a></li>
+            </ul>
+            <div class="signup-section">
+                <h3>New user?</h3>
+                <h4>Sign up today for more features!</h4>
+                <a href="sign-up.html">
+                    <div class="nav-button this-button"> Sign Up</div>
+                </a>
+                <div class="already-user">
+                    <div class="already-user-left">
+                        <h6>Already a User?</h4>
+                    </div>
+                    <div class="already-user-right">
+                        <h6 class="signIn"><a>Sign In</a> </h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right section  -->
+        <section class="main-content" id="mainContent">
+            <button id="drawer-toggle" class="drawer-toggle">&#9776;</button>
+            <h1 class="heading">Matrix Multiplication: </h1>
+            <h2 class="sub-heading">Multiply Your Way to Matrix Mastery</h2>
+
+            <section class="instructions">
+                <h3 class="sub-heading">Instructions:</h3>
+                <ol>
+                    <li>
+                        1. <strong>Enter the values for Matrix A:</strong> Locate the table labeled "Matrix A" and enter
+                        the values for each cell. The matrix size is 3x3, so you need to enter a total of 9 values.
+                    </li>
+                    <li>
+                        2. <strong>Enter the values for Matrix B:</strong> Locate the table labeled "Matrix B" and enter
+                        the values for each cell. Like Matrix A, Matrix B is also 3x3, so you need to enter a total of 9
+                        values.
+                    </li>
+                    <li>
+                        3. <strong>Perform matrix multiplication:</strong>
+                        <ul>
+                            <li>Click the "A x B" button to multiply Matrix A by Matrix B (AxB).</li>
+                            <li>Click the "B x A" button to multiply Matrix B by Matrix A (BxA).</li>
+                        </ul>
+                        >> Note: If the matrices cannot be multiplied, an alert message will appear, stating that the
+                        number of columns in the first matrix must be equal to the number of rows in the second matrix.
+                    </li>
+                    <li>
+                        4. <strong>View the result:</strong> After clicking one of the multiplication buttons, the
+                        resulting matrix will appear in the "Resulting Matrix" table. The cells in this table are
+                        read-only and will display the calculated values.
+                    </li>
+                    <li>
+                        5. <strong>Clear the matrices:</strong> If you want to clear the values in Matrix A or Matrix B,
+                        click the "Clear" button below the respective matrix. This will reset all input fields in the
+                        selected matrix.
+                    </li>
+
+                </ol>
+            </section>
+            <!-- HAVE YOUR STUFF HERE  -->
+            <section class="matrix-area">
+                <div class="container">
+                    <div class="matrix-column">
+                        <h2>Matrix A</h2>
+                        <table id="matrixA" class="matrix"></table>
+                        <button onclick="clearInputValues('matrixA')">Clear</button>
+                    </div>
+                    <div class="buttons-column">
+
+                        <button onclick="multiplyMatrices('AxB')">A x B</button>
+                        <button onclick="multiplyMatrices('BxA')">B x A</button>
+                    </div>
+                    <div class="matrix-column">
+                        <h2>Matrix B</h2>
+                        <table id="matrixB" class="matrix"></table>
+                        <button onclick="clearInputValues('matrixB')">Clear</button>
+
+                    </div>
+                </div>
+                <div class="result">
+                    <h2>Resulting Matrix</h2>
+                    <table id="resultMatrix" class="matrix"></table>
+                </div>
+            </section>
+
+        </section>
+
+        <!-- footer  -->
+
+
+
+    </div>
+    <footer class="footer">
+        <div class="footer-left">
+            <h3 class="name">Equation Engine</h3>
+            <p class="tagline">Crunching numbers so you don't have to</p>
+            <div class="credits">
+                <p>Submitted to: Anthony Aighobahi</p>
+                <p>Submitted by: Gursahib Singh</p>
+            </div>
+        </div>
+        <div class="footer-right">
+            <h3>Have any suggestions on how can we improve?</h3>
+            <p>Please write the point on what we can improve?</p>
+            <div class="email-suggestion">
+                <input type="text" placeholder="Your suggestion...">
+                <button class="send-button">
+                    <span class="send-icon"><img src="../assets/images/send.png"></span>
+                    <span class="send-text">Send</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById("drawer-toggle").addEventListener("click", function () {
+            document.getElementById("leftCol").classList.toggle("open");
+            document.getElementById("drawer-toggle").classList.toggle("hidden");
+        });
+        document.getElementById("leftCol").addEventListener("click", function () {
+            document.getElementById("leftCol").classList.remove("open");
+            document.getElementById("drawer-toggle").classList.remove("hidden");
+        });
+        document.getElementById("drawer-close").addEventListener("click", function () {
+            document.getElementById("leftCol").classList.remove("open");
+        });
+    </script>
+</body>
+
+</html>
