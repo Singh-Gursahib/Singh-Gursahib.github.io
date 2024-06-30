@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        body.light-mode {
+            background-color: #ffffff;
+            color: #333333;
+        }
+        #input-area {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: calc(100% - 40px);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+            box-sizing: border-box;
+        }
+        #generate-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        #generate-button:hover {
+            background-color: #45a049;
+        }
+        #graph-container {
+            width: 100%;
+            height: calc(100vh - 200px);
+            margin-top: 180px;
+        }
+        .node text {
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .link {
+            stroke-opacity: 0.4;
+        }
+        .node circle {
+            stroke-width: 1.5px;
+        }
+        #mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #description-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            display: none;
+            font-size: 14px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        #input-area {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: calc(100% - 40px);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            color: #333333;
+        }
+        #generate-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+            align-self: flex-start;
+            margin-top: 10px;
+        }
+        #generate-button:hover {
+            background-color: #45a049;
+        }
+        #graph-container {
+            width: 100%;
+            height: calc(100vh - 250px);
+            margin-top: 230px;
+        }
+        #mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #333333;
+            color: #ffffff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div id="input-area">
+        <textarea id="markdown-input" placeholder="Enter your markdown text here..."></textarea>
+        <button id="generate-button">Generate Graph</button>
+    </div>
+    <div id="graph-container"></div>
+    <button id="mode-toggle">Toggle Light/Dark Mode</button>
+    <div id="description-box"></div>
+    <script>
+        function parseMarkdownToGraph(markdown) {
+            const lines = markdown.trim().split('\n');
+            const nodes = [];
+            const links = [];
+            const stack = [];
+            let currentDescription = '';
+
+            lines.forEach((line, index) => {
+                if (line.startsWith('#')) {
+                    const level = line.match(/^#+/)[0].length;
+                    const name = line.replace(/^#+\s*/, '').trim();
+                    
+                    const node = { id: name, group: level, description: currentDescription };
+                    nodes.push(node);
+
+                    if (stack.length >= level) {
+                        stack.splice(level - 1);
+                    }
+
+                    if (stack.length > 0) {
+                        links.push({ source: stack[stack.length - 1], target: name });
+                    }
+
+                    stack.push(name);
+                    currentDescription = '';
+                } else {
+                    currentDescription += line + ' ';
+                }
+
+                if (index === lines.length - 1 && currentDescription) {
+                    nodes[nodes.length - 1].description = currentDescription.trim();
+                }
+            });
+
+            return { nodes, links };
+        }
+
+        function createGraph() {
+            const markdownContent = document.getElementById('markdown-input').value;
+            const graph = parseMarkdownToGraph(markdownContent);
+
+            const width = window.innerWidth;
+            const height = window.innerHeight * 0.7;
+            let color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            const svg = d3.select("#graph-container").html("")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            const simulation = d3.forceSimulation(graph.nodes)
+                .force("link", d3.forceLink(graph.links).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-500))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide().radius(30));
+
+            let link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("class", "link");
+
+            let node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("g")
+                .data(graph.nodes)
+                .enter().append("g")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.append("circle")
+                .attr("r", d => Math.max(5, 20 - d.group * 3))
+                .attr("fill", d => color(d.group));
+
+            node.append("text")
+                .attr("dx", 12)
+                .attr("dy", ".35em")
+                .text(d => d.id);
+
+            node.on("click", clicked);
+
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+
+            function clicked(event, d) {
+                d3.select(this).select("circle").transition()
+                    .duration(750)
+                    .attr("r", 20)
+                    .transition()
+                    .duration(750)
+                    .attr("r", Math.max(5, 20 - d.group * 3));
+
+                node.style("opacity", n => (n === d || isConnected(d, n)) ? 1 : 0.1);
+                link.style("opacity", l => (l.source === d || l.target === d) ? 1 : 0.1);
+
+                this.parentNode.appendChild(this);
+                link.each(function(l) {
+                    if (l.source === d || l.target === d) {
+                        this.parentNode.appendChild(this);
+                    }
+                });
+
+                const descriptionBox = document.getElementById('description-box');
+                if (d.description) {
+                    descriptionBox.textContent = d.description;
+                    descriptionBox.style.display = 'block';
+                } else {
+                    descriptionBox.style.display = 'none';
+                }
+            }
+
+            function isConnected(a, b) {
+                return graph.links.some(l => (l.source === a && l.target === b) || (l.source === b && l.target === a));
+            }
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on("zoom", zoomed);
+
+            svg.call(zoom);
+
+            function zoomed(event) {
+                const { transform } = event;
+                svg.selectAll("g").attr("transform", transform);
+            }
+
+            svg.on("dblclick.zoom", null);
+            svg.on("dblclick", () => {
+                node.style("opacity", 1);
+                link.style("opacity", 1);
+                document.getElementById('description-box').style.display = 'none';
+                svg.transition().duration(750).call(
+                    zoom.transform,
+                    d3.zoomIdentity,
+                    d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
+                );
+            });
+
+            simulation.restart();
+        }
+
+        const modeToggle = document.getElementById('mode-toggle');
+        const generateButton = document.getElementById('generate-button');
+        const body = document.body;
+
+        function updateColors(isDarkMode) {
+            const backgroundColor = isDarkMode ? '#1a1a1a' : '#ffffff';
+            const textColor = isDarkMode ? '#ffffff' : '#333333';
+            const linkColor = isDarkMode ? '#555' : '#999';
+
+            body.style.backgroundColor = backgroundColor;
+            body.style.color = textColor;
+
+            d3.selectAll('.link').style('stroke', linkColor);
+            d3.selectAll('.node text').style('fill', textColor);
+
+            modeToggle.style.backgroundColor = isDarkMode ? '#ffffff' : '#333333';
+            modeToggle.style.color = isDarkMode ? '#333333' : '#ffffff';
+        }
+
+        modeToggle.addEventListener('click', () => {
+            const isDarkMode = body.classList.toggle('dark-mode');
+            body.classList.toggle('light-mode');
+            updateColors(isDarkMode);
+        });
+
+        generateButton.addEventListener('click', createGraph);
+
+        updateColors(true);
+    </script>
+</body>
+</html>
