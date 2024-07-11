@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Portrait Generator</title>
+    <style>
+        body { margin: 0; background-color: #191919; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, points;
+        let rotationAngle = 0;
+        const ROTATION_SPEED = 0.0025;
+        const PAUSE_DURATION = 500; // 1 second pause
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x191919);
+
+            const aspect = window.innerWidth / window.innerHeight;
+            const d = 5;
+            camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            camera.position.z = 5;
+            camera.zoom = 1.5; // Increase the zoom level
+            camera.updateProjectionMatrix();
+
+            // Load the image from the directory
+            const img = new Image();
+            img.onload = function() {
+                processImage(img);
+            };
+            img.src = 'img.png'; // Assuming the image is in the same directory as the HTML file
+        }
+
+        function processImage(image) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const index = (y * canvas.width + x) * 4;
+                    const r = data[index];
+                    const g = data[index + 1];
+                    const b = data[index + 2];
+                    const brightness = (r + g + b) / 3;
+
+                    if (brightness > 0.1) {  // Threshold to reduce noise
+                        const grayscale = brightness / 255;
+                        positions.push(
+                            (x / canvas.width - 0.5) * 4,
+                            (y / canvas.height - 0.5) * -4,
+                            grayscale * 2 - 1  // Center the depth
+                        );
+                        colors.push(grayscale, grayscale, grayscale);  // Use grayscale value for colors
+                    }
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({ size: 0.05, vertexColors: true }); // Increase the size of the points
+            points = new THREE.Points(geometry, material);
+            scene.add(points);
+
+            // Center the points
+            geometry.computeBoundingBox();
+            const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+            points.position.sub(center);
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+
+            if (points) {
+                const cycleTime = (2 * Math.PI / ROTATION_SPEED) + PAUSE_DURATION;
+                const t = (time % cycleTime) / cycleTime;
+
+                if (t < PAUSE_DURATION / cycleTime) {
+                    // Pausing at starting position
+                    rotationAngle = 0;
+                } else {
+                    // Rotating
+                    const rotationT = (t - PAUSE_DURATION / cycleTime) / (1 - PAUSE_DURATION / cycleTime);
+                    const easedT = easeInOutCubic(rotationT);
+                    rotationAngle = easedT * 2 * Math.PI;
+                }
+
+                points.rotation.y = rotationAngle;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        init();
+        animate(0);
+
+        window.addEventListener('resize', function() {
+            const aspect = window.innerWidth / window.innerHeight;
+            const d = 5;
+            camera.left = -d * aspect;
+            camera.right = d * aspect;
+            camera.top = d;
+            camera.bottom = -d;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
