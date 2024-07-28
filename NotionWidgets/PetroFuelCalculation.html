@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commute Cost Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #results, #formulas {
+            background-color: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 30px;
+        }
+        #results h2, #formulas h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        #results p, #formulas p {
+            margin: 10px 0;
+        }
+        .formula {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e8f6f3;
+            padding: 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Commute Cost Calculator</h1>
+        <div class="input-group">
+            <label for="fuelEfficiency">Fuel Efficiency (km/L):</label>
+            <input type="number" id="fuelEfficiency" value="14" step="0.1">
+        </div>
+        <div class="input-group">
+            <label for="distance">Distance (km):</label>
+            <input type="number" id="distance" value="4.3" step="0.1">
+        </div>
+        <div class="input-group">
+            <label for="fuelPrice">Fuel Price ($/L):</label>
+            <input type="number" id="fuelPrice" value="1.7" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="workDays">Work Days per Week:</label>
+            <input type="number" id="workDays" value="6" step="1">
+        </div>
+        <button onclick="calculateCosts()">Calculate</button>
+        <div id="results"></div>
+        <div id="formulas">
+            <h2>Calculation Formulas:</h2>
+            <p><span class="formula">Fuel per trip = Distance / Fuel Efficiency</span></p>
+            <p><span class="formula">Cost per trip = Fuel per trip * Fuel Price</span></p>
+            <p><span class="formula">Daily Cost = Cost per trip * 2</span></p>
+            <p><span class="formula">Weekly Cost = Daily Cost * Work Days per Week</span></p>
+            <p><span class="formula">Weekly Fuel Usage = Fuel per trip * 2 * Work Days per Week</span></p>
+            <p><span class="formula">Weekly Distance = Distance * 2 * Work Days per Week</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateCosts() {
+            const fuelEfficiency = parseFloat(document.getElementById('fuelEfficiency').value);
+            const distance = parseFloat(document.getElementById('distance').value);
+            const fuelPrice = parseFloat(document.getElementById('fuelPrice').value);
+            const workDays = parseInt(document.getElementById('workDays').value);
+
+            const fuelPerTrip = distance / fuelEfficiency;
+            const costPerTrip = fuelPerTrip * fuelPrice;
+            const dailyCost = costPerTrip * 2;
+            const weeklyCost = dailyCost * workDays;
+            const weeklyFuelUsage = fuelPerTrip * 2 * workDays;
+            const weeklyDistance = distance * 2 * workDays;
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h2>Results:</h2>
+                <p>One-way Cost: $${costPerTrip.toFixed(2)}</p>
+                <p>Daily Cost: $${dailyCost.toFixed(2)}</p>
+                <p>Weekly Cost: $${weeklyCost.toFixed(2)}</p>
+                <p>Weekly Fuel Usage: ${weeklyFuelUsage.toFixed(2)} L</p>
+                <p>Weekly Distance: ${weeklyDistance.toFixed(2)} km</p>
+            `;
+        }
+
+        calculateCosts();
+    </script>
+</body>
+</html>
