@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Cost Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 20px;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .slider-container {
+            margin: 25px 0;
+        }
+        .slider-label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: #dfe6e9;
+            outline: none;
+            border-radius: 15px;
+            height: 10px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .result-box {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            width: calc(33% - 10px);
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .result-box:hover {
+            transform: translateY(-5px);
+        }
+        .result-box h2 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #2980b9;
+        }
+        #graphContainer {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Signup Cost Analysis</h1>
+    <div class="slider-container">
+        <div class="slider-label">Time per Signup (minutes): <span id="timePerSignupValue">5</span></div>
+        <input type="range" id="timePerSignupSlider" min="2" max="8" value="5" step="1">
+    </div>
+    <div class="slider-container">
+        <div class="slider-label">Total Number of Signups: <span id="totalSignupsValue">500</span></div>
+        <input type="range" id="totalSignupsSlider" min="100" max="1000" value="500" step="10">
+    </div>
+    <div class="slider-container">
+        <div class="slider-label">Hourly Wage Rate ($): <span id="hourlyWageValue">17.40</span></div>
+        <input type="range" id="hourlyWageSlider" min="10" max="30" step="0.10" value="17.40">
+    </div>
+    <div class="results">
+        <div class="result-box">
+            <h2 id="totalTime">Total Time: 41.67 hours</h2>
+        </div>
+        <div class="result-box">
+            <h2 id="totalEarnings">Total Earnings: $725</h2>
+        </div>
+        <div class="result-box">
+            <h2 id="costPerSignup">Cost per Signup: $1.45</h2>
+        </div>
+        <div class="result-box">
+            <h2 id="hoursPerDay">Hours Worked per Day: 2.78</h2>
+        </div>
+        <div class="result-box">
+            <h2 id="signupsPerDay">Signups per Day: 33.33</h2>
+        </div>
+    </div>
+    <div id="graphContainer">
+        <canvas id="costChart"></canvas>
+    </div>
+</div>
+
+<script>
+    // Initial values
+    let timePerSignup = 5;
+    let totalSignups = 500;
+    let hourlyWage = 17.40;
+    const totalDays = 15;
+
+    // Get elements
+    const timePerSignupSlider = document.getElementById('timePerSignupSlider');
+    const totalSignupsSlider = document.getElementById('totalSignupsSlider');
+    const hourlyWageSlider = document.getElementById('hourlyWageSlider');
+    const timePerSignupValue = document.getElementById('timePerSignupValue');
+    const totalSignupsValue = document.getElementById('totalSignupsValue');
+    const hourlyWageValue = document.getElementById('hourlyWageValue');
+    const totalTimeElement = document.getElementById('totalTime');
+    const totalEarningsElement = document.getElementById('totalEarnings');
+    const costPerSignupElement = document.getElementById('costPerSignup');
+    const hoursPerDayElement = document.getElementById('hoursPerDay');
+    const signupsPerDayElement = document.getElementById('signupsPerDay');
+
+    // Chart initialization
+    const ctx = document.getElementById('costChart').getContext('2d');
+    const costChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Cost per Signup',
+                data: [],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time per Signup (minutes)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Cost per Signup ($)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Update values and results
+    function updateValues() {
+        timePerSignup = parseFloat(timePerSignupSlider.value);
+        totalSignups = parseInt(totalSignupsSlider.value);
+        hourlyWage = parseFloat(hourlyWageSlider.value);
+
+        timePerSignupValue.textContent = timePerSignup;
+        totalSignupsValue.textContent = totalSignups;
+        hourlyWageValue.textContent = hourlyWage.toFixed(2);
+
+        updateResults();
+        updateChart();
+    }
+
+    function updateResults() {
+        const totalTimeMinutes = timePerSignup * totalSignups;
+        const totalTimeHours = totalTimeMinutes / 60;
+        const totalEarnings = totalTimeHours * hourlyWage;
+        const costPerSignup = totalEarnings / totalSignups;
+        const hoursPerDay = totalTimeHours / totalDays;
+        const signupsPerDay = totalSignups / totalDays;
+
+        totalTimeElement.textContent = `Total Time: ${totalTimeHours.toFixed(2)} hours`;
+        totalEarningsElement.textContent = `Total Earnings: $${totalEarnings.toFixed(2)}`;
+        costPerSignupElement.textContent = `Cost per Signup: $${costPerSignup.toFixed(2)}`;
+        hoursPerDayElement.textContent = `Hours Worked per Day: ${hoursPerDay.toFixed(2)}`;
+        signupsPerDayElement.textContent = `Signups per Day: ${signupsPerDay.toFixed(2)}`;
+    }
+
+    function updateChart() {
+        const data = [];
+        const labels = [];
+        for (let i = 2; i <= 8; i++) {
+            const costPerSignup = (hourlyWage / 60) * i;
+            data.push(costPerSignup);
+            labels.push(i);
+        }
+        costChart.data.labels = labels;
+        costChart.data.datasets[0].data = data;
+        costChart.update();
+    }
+
+    // Initial update
+    updateValues();
+
+    // Event listeners
+    timePerSignupSlider.addEventListener('input', updateValues);
+    totalSignupsSlider.addEventListener('input', updateValues);
+    hourlyWageSlider.addEventListener('input', updateValues);
+</script>
+
+</body>
+</html>
