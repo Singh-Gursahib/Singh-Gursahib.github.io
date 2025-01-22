@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      padding: 32px;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .setup-container {
+      animation: fadeIn 0.5s ease;
+    }
+
+    .instructions {
+      background: #f7fafc;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin-bottom: 24px;
+      border-radius: 8px;
+    }
+
+    .instructions h2 {
+      color: #2d3748;
+      margin-bottom: 12px;
+    }
+
+    .instructions ul {
+      margin-left: 20px;
+      color: #4a5568;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+
+    .input-area {
+      margin-bottom: 24px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: monospace;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+
+    .quiz-container {
+      display: none;
+    }
+
+    .question-number {
+      color: #764ba2;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .question {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 24px;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option {
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      color: #4a5568;
+      display: flex;
+      align-items: center;
+    }
+
+    .option:before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 50%;
+      margin-right: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .option:hover {
+      background: #f7fafc;
+      border-color: #667eea;
+    }
+
+    .option:hover:before {
+      border-color: #667eea;
+    }
+
+    .option.correct {
+      background: #c6f6d5;
+      border-color: #48bb78;
+      color: #2f855a;
+    }
+
+    .option.correct:before {
+      background: #48bb78;
+      border-color: #48bb78;
+    }
+
+    .option.wrong {
+      background: #fed7d7;
+      border-color: #f56565;
+      color: #c53030;
+    }
+
+    .option.wrong:before {
+      background: #f56565;
+      border-color: #f56565;
+    }
+
+    .explanation {
+      margin-top: 16px;
+      padding: 16px;
+      background: #ebf4ff;
+      border-radius: 8px;
+      color: #4a5568;
+      font-size: 0.9rem;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .next-btn {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .results {
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .score {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #2d3748;
+      margin-bottom: 16px;
+    }
+
+    .score-detail {
+      font-size: 1.1rem;
+      color: #4a5568;
+      margin-bottom: 24px;
+    }
+
+    .incorrect-answers {
+      text-align: left;
+      margin-top: 24px;
+    }
+
+    .incorrect-item {
+      margin-bottom: 16px;
+      padding: 16px;
+      background: #fff5f5;
+      border-radius: 8px;
+      border-left: 4px solid #f56565;
+    }
+
+    .error-message {
+      color: #c53030;
+      background: #fed7d7;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s ease;
+    }
+
+    .restart-btn {
+      margin-top: 24px;
+      background: #4a5568;
+    }
+
+    .restart-btn:hover {
+      background: #2d3748;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="setup-container">
+      <div class="instructions">
+        <h2>Create Your Quiz</h2>
+        <ul>
+          <li>Paste your questions in JSON format in the box below</li>
+          <li>Each question should have these properties:
+            <ul>
+              <li>"question": The question text</li>
+              <li>"options": Array of possible answers</li>
+              <li>"correct": Index of correct answer (0 for first option, 1 for second, etc.)</li>
+              <li>"explanation": Explanation shown after answering</li>
+            </ul>
+          </li>
+          <li>Follow the example format shown in the input box</li>
+        </ul>
+      </div>
+
+      <div class="input-area">
+        <textarea id="questions-input" placeholder="Paste your questions here...">[
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+    "correct": 1,
+    "explanation": "Mars is called the Red Planet because of its reddish appearance."
+  },
+  {
+    "question": "What is the capital of France?",
+    "options": ["London", "Berlin", "Paris", "Madrid"],
+    "correct": 2,
+    "explanation": "Paris is the capital city of France."
+  }
+]</textarea>
+        <div class="error-message"></div>
+        <button class="btn" onclick="startQuiz()">Start Quiz</button>
+      </div>
+    </div>
+
+    <div class="quiz-container">
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+      <div id="quiz">
+        <div class="question-number"></div>
+        <div class="question"></div>
+        <div class="options"></div>
+        <div class="explanation"></div>
+        <button class="btn next-btn">Next Question</button>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="score"></div>
+      <div class="score-detail"></div>
+      <div class="incorrect-answers"></div>
+      <button class="btn restart-btn" onclick="restartQuiz()">Start New Quiz</button>
+    </div>
+  </div>
+
+  <script>
+    let quizData = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let incorrectAnswers = [];
+
+    const setupContainer = document.querySelector('.setup-container');
+    const quizContainer = document.querySelector('.quiz-container');
+    const resultsContainer = document.querySelector('.results');
+    const questionNumber = document.querySelector('.question-number');
+    const questionElement = document.querySelector('.question');
+    const optionsContainer = document.querySelector('.options');
+    const explanationElement = document.querySelector('.explanation');
+    const nextButton = document.querySelector('.next-btn');
+    const errorMessage = document.querySelector('.error-message');
+    const progressBar = document.querySelector('.progress');
+
+    function startQuiz() {
+      try {
+        const input = document.getElementById('questions-input').value;
+        quizData = JSON.parse(input);
+        
+        if (!Array.isArray(quizData) || quizData.length === 0) {
+          throw new Error('Please provide at least one question');
+        }
+
+        // Validate each question
+        quizData.forEach((q, index) => {
+          if (!q.question || !Array.isArray(q.options) || q.correct === undefined || !q.explanation) {
+            throw new Error(`Question ${index + 1} is missing required properties`);
+          }
+        });
+
+        // Reset quiz state
+        currentQuestion = 0;
+        score = 0;
+        incorrectAnswers = [];
+        
+        // Show quiz
+        setupContainer.style.display = 'none';
+        quizContainer.style.display = 'block';
+        resultsContainer.style.display = 'none';
+        showQuestion();
+      } catch (error) {
+        errorMessage.textContent = 'Error: ' + error.message;
+        errorMessage.style.display = 'block';
+      }
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestion + 1) / quizData.length) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    function showQuestion() {
+      updateProgress();
+      const question = quizData[currentQuestion];
+      questionNumber.textContent = `Question ${currentQuestion + 1}/${quizData.length}`;
+      questionElement.textContent = question.question;
+      
+      optionsContainer.innerHTML = '';
+      question.options.forEach((option, index) => {
+        const button = document.createElement('div');
+        button.className = 'option';
+        button.textContent = option;
+        button.addEventListener('click', () => selectOption(index));
+        optionsContainer.appendChild(button);
+      });
+
+      explanationElement.style.display = 'none';
+      nextButton.style.display = 'none';
+    }
+
+    function selectOption(selectedIndex) {
+      const question = quizData[currentQuestion];
+      const options = optionsContainer.querySelectorAll('.option');
+      
+      // Disable all options
+      options.forEach(option => option.style.pointerEvents = 'none');
+      
+      if (selectedIndex === question.correct) {
+        options[selectedIndex].classList.add('correct');
+        score++;
+      } else {
+        options[selectedIndex].classList.add('wrong');
+        options[question.correct].classList.add('correct');
+        incorrectAnswers.push({
+          question: question.question,
+          incorrectAnswer: question.options[selectedIndex],
+          correctAnswer: question.options[question.correct]
+        });
+      }
+
+      explanationElement.textContent = question.explanation;
+      explanationElement.style.display = 'block';
+      nextButton.style.display = 'block';
+    }
+
+    function showResults() {
+      quizContainer.style.display = 'none';
+      resultsContainer.style.display = 'block';
+      
+      const scoreElement = resultsContainer.querySelector('.score');
+      const scoreDetail = resultsContainer.querySelector('.score-detail');
+      const percentage = (score / quizData.length) * 100;
+      
+      scoreElement.textContent = `${score}/${quizData.length}`;
+      scoreDetail.textContent = `You scored ${percentage.toFixed(1)}%`;
+      
+      const incorrectAnswersContainer = resultsContainer.querySelector('.incorrect-answers');
+      incorrectAnswersContainer.innerHTML = '';
+      
+      if (incorrectAnswers.length > 0) {
+        incorrectAnswersContainer.innerHTML = '<h3 style="margin-bottom: 16px;">Review Incorrect Answers:</h3>';
+        incorrectAnswers.forEach(item => {
+          const incorrectItem = document.createElement('div');
+          incorrectItem.className = 'incorrect-item';
+          incorrectItem.innerHTML = `
+            <p><strong>Question:</strong> ${item.question}</p>
+            <p><strong>Your answer:</strong> ${item.incorrectAnswer}</p>
+            <p><strong>Correct answer:</strong> ${item.correctAnswer}</p>
+          `;
+          incorrectAnswersContainer.appendChild(incorrectItem);
+        });
+      }
+    }
+
+    function restartQuiz() {
+      setupContainer.style.display = 'block';
+      quizContainer.style.display = 'none';
+      resultsContainer.style.display = 'none';
+      errorMessage.style.display = 'none';
+    }
+
+    nextButton.addEventListener('click', () => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    });
+  </script>
+</body>
+</html>
