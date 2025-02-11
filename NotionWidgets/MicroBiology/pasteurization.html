@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pasteurization Experiment</title>
+  <style>
+    /* Overall Page Style */
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Helvetica', sans-serif; /* Changed to Helvetica */
+      background: linear-gradient(135deg, #fdebd0, #f8c471);
+      color: #5d4037;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    /* Control Panel */
+    #controls {
+      margin: 20px auto;
+      max-width: 500px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    #controls select {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    #recommended p {
+      margin: 5px 0;
+      font-weight: bold;
+    }
+    /* Visualization Area */
+    #visualization {
+      position: relative;
+      margin: 30px auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 40px;
+      max-width: 600px;
+      flex-wrap: wrap;
+    }
+    /* Flask (Liquid Container) */
+    #flask {
+      position: relative;
+      width: 150px;
+      height: 250px;
+      border: 4px solid #5d4037;
+      border-bottom-left-radius: 70px;
+      border-bottom-right-radius: 70px;
+      background: #fff;
+      overflow: hidden;
+    }
+    #liquid {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: #cfd8dc;
+      transition: background-color 0.5s ease;
+    }
+    /* Thermometer */
+    #thermometer {
+      position: relative;
+      width: 40px;
+      height: 250px;
+      border: 3px solid #5d4037;
+      border-radius: 20px;
+      background: #eee;
+      overflow: hidden;
+      margin: auto 0;
+    }
+    #thermometerFill {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 0%;
+      background: #e53935;
+      transition: height 0.3s ease;
+    }
+    /* Temperature Control */
+    #temperatureControl {
+      margin: 20px auto;
+      max-width: 500px;
+    }
+    #temperatureControl input[type=range] {
+      width: 80%;
+      margin-top: 10px;
+    }
+    #currentTemp {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    /* Timer and Message */
+    #timerDisplay, #message {
+      font-size: 18px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    /* Microbe Styles */
+    .microbe {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #d32f2f;
+      border-radius: 50%;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%   { transform: translate(0, 0); }
+      25%  { transform: translate(10px, -10px); }
+      50%  { transform: translate(-10px, -10px); }
+      75%  { transform: translate(-10px, 10px); }
+      100% { transform: translate(0, 0); }
+    }
+    /* When microbes are “killed” at correct temperature */
+    .dead {
+      transition: transform 0.8s ease, opacity 0.8s ease;
+      transform: scale(0);
+      opacity: 0;
+    }
+    /* When overheated (spoiled) */
+    .spoiled {
+      background: purple;
+      animation: bounce 0.5s infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-5px); }
+    }
+    /* Success Glow on Flask */
+    .glow {
+      box-shadow: 0 0 20px 5px #ffeb3b;
+      transition: box-shadow 0.5s ease;
+    }
+    /* Success message style */
+    .success {
+      color: #388e3c;
+    }
+    /* Confetti Styles */
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      opacity: 0;
+      animation: confetti-fall 1s forwards;
+    }
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Pasteurization Experiment</h1>
+  
+  <!-- Control Panel: Select Food & Show Recommended Parameters -->
+  <div id="controls">
+    <label for="foodSelect">Select Food Source:</label>
+    <select id="foodSelect">
+      <option value="Milk" selected>Milk</option>
+      <option value="Orange Juice">Orange Juice</option>
+      <option value="UHT Milk">UHT Milk</option>
+      <option value="Wine">Wine</option>
+    </select>
+    <div id="recommended"></div>
+  </div>
+
+  <!-- Visualization: Flask with Liquid and a Thermometer -->
+  <div id="visualization">
+    <div id="flask">
+      <div id="liquid"></div>
+    </div>
+    <div id="thermometer">
+      <div id="thermometerFill"></div>
+    </div>
+  </div>
+
+  <!-- Temperature Slider and Display -->
+  <div id="temperatureControl">
+    <div id="currentTemp">Temperature: <span id="tempValue">60</span> °C</div>
+    <input type="range" id="tempSlider" min="0" max="150" value="60">
+  </div>
+  
+  <!-- Timer and Success Message -->
+  <div id="timerDisplay">Time left: <span id="timeLeft"></span></div>
+  <div id="message"></div>
+  
+  <!-- Confetti Container -->
+  <div id="confetti" class="confetti"></div>
+  
+  <script>
+    /***** Product Settings *****
+         For each food, we set:
+         - Recommended temperature (if a range, tempMin to tempMax; if a single value, both are equal)
+         - A text description of the hold-time (the “real” recommended time)
+         - A simulated hold-time (in seconds) used in this demo.
+         - A default temperature (for the slider) ******/
+    const productSettings = {
+      "Orange Juice": { tempMin: 95, tempMax: 98, timeText: "10 to 30 seconds", simTime: 10, defaultTemp: 95 },
+      "Milk":       { tempMin: 60, tempMax: 60, timeText: "20 to 30 minutes",   simTime: 20, defaultTemp: 60 },
+      "UHT Milk":   { tempMin: 140, tempMax: 140, timeText: "2 to 3 seconds",     simTime: 2,  defaultTemp: 140 },
+      "Wine":       { tempMin: 55, tempMax: 55, timeText: "30 minutes",         simTime: 30, defaultTemp: 55 }
+    };
+
+    let currentProduct = "Milk";
+    let timerInterval = null;
+    let countdownTime = productSettings[currentProduct].simTime;
+
+    // Grab DOM elements
+    const foodSelect = document.getElementById('foodSelect');
+    const recommendedDiv = document.getElementById('recommended');
+    const tempSlider = document.getElementById('tempSlider');
+    const tempValueSpan = document.getElementById('tempValue');
+    const thermometerFill = document.getElementById('thermometerFill');
+    const liquid = document.getElementById('liquid');
+    const timerDisplay = document.getElementById('timeLeft');
+    const messageDiv = document.getElementById('message');
+    const confettiContainer = document.getElementById('confetti');
+
+    // Update the recommended settings text
+    function updateRecommended() {
+      const settings = productSettings[currentProduct];
+      let tempInfo = (settings.tempMin === settings.tempMax) 
+                     ? settings.tempMin + "°C" 
+                     : settings.tempMin + "°C - " + settings.tempMax + "°C";
+      recommendedDiv.innerHTML = `<p>Recommended Temperature: ${tempInfo}</p>
+                                  <p>Hold for: ${settings.timeText}</p>`;
+    }
+
+    // Reset the countdown timer and clear any messages
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      countdownTime = productSettings[currentProduct].simTime;
+      timerDisplay.textContent = countdownTime + " sec";
+      messageDiv.textContent = "";
+      messageDiv.classList.remove("success");
+      liquid.classList.remove("glow");
+    }
+
+    // Confetti Animation Function
+    function triggerConfetti() {
+      const confettiColors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7', '#73D2DE'];
+      const confettiCount = 100;
+      for(let i = 0; i < confettiCount; i++) {
+        const confettiPiece = document.createElement('div');
+        confettiPiece.classList.add('confetti-piece');
+        confettiPiece.style.left = Math.random() * 100 + 'vw';
+        confettiPiece.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        confettiPiece.style.animationDelay = Math.random() * 2 + 's';
+        confettiPiece.style.width = Math.random() * 10 + 5 + 'px';
+        confettiPiece.style.height = confettiPiece.style.width;
+        confettiContainer.appendChild(confettiPiece);
+
+        // Remove confetti piece after animation
+        confettiPiece.addEventListener('animationend', () => {
+          confettiContainer.removeChild(confettiPiece);
+        });
+      }
+    }
+
+    // Start the countdown timer (double speed)
+    function startTimer() {
+      if(timerInterval) return;
+      timerDisplay.textContent = countdownTime + " sec";
+      timerInterval = setInterval(() => {
+        countdownTime--;
+        timerDisplay.textContent = countdownTime + " sec";
+        if(countdownTime <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          messageDiv.textContent = "Perfect Temperature for Pasteurization!";
+          messageDiv.classList.add("success");
+          liquid.classList.add("glow");
+          triggerConfetti(); // Trigger confetti animation
+        }
+      }, 500); // Changed from 1000 to 500 ms for double speed
+    }
+
+    // Initialize or reinitialize microbes inside the liquid container
+    function resetMicrobes() {
+      liquid.innerHTML = "";
+      // Create 10 microbe elements at random positions
+      for(let i = 0; i < 10; i++){
+        const microbe = document.createElement("div");
+        microbe.classList.add("microbe");
+        microbe.style.top = Math.random() * 90 + "%";
+        microbe.style.left = Math.random() * 90 + "%";
+        liquid.appendChild(microbe);
+      }
+    }
+
+    // Update the thermometer fill based on slider temperature (range: 0–150°C)
+    function updateThermometer() {
+      let percent = (tempSlider.value / 150) * 100;
+      thermometerFill.style.height = percent + "%";
+    }
+
+    // Change the liquid's color to reflect heating (blueish at low temp, reddish at high temp)
+    function updateLiquidColor() {
+      let temp = tempSlider.value;
+      let hue = 200 - (temp / 150) * 200; // hue from 200 (blue) to 0 (red)
+      liquid.style.backgroundColor = `hsl(${hue}, 70%, 60%)`;
+    }
+
+    // Check if the current temperature is within the recommended range
+    function checkTemperature() {
+      const settings = productSettings[currentProduct];
+      let currentTemp = parseInt(tempSlider.value);
+      tempValueSpan.textContent = currentTemp;
+      updateThermometer();
+      updateLiquidColor();
+      
+      // Determine if the temperature is "in range"
+      let inRange = false;
+      if(settings.tempMin === settings.tempMax){
+        // For single-value targets, allow a small tolerance (±1°C)
+        inRange = Math.abs(currentTemp - settings.tempMin) <= 1;
+      } else {
+        inRange = currentTemp >= settings.tempMin && currentTemp <= settings.tempMax;
+      }
+      
+      // If correct temperature, microbes "die" and start (or continue) the timer
+      if(inRange) {
+        let microbes = liquid.querySelectorAll('.microbe');
+        microbes.forEach(m => {
+          m.classList.add("dead");
+          m.classList.remove("spoiled");
+        });
+        startTimer();
+      } else {
+        // Check for overheating: if temperature exceeds recommended by more than 5°C
+        let isOverheat = false;
+        if(settings.tempMin === settings.tempMax) {
+          if(currentTemp > settings.tempMin + 5) isOverheat = true;
+        } else {
+          if(currentTemp > settings.tempMax + 5) isOverheat = true;
+        }
+        if(isOverheat) {
+          let microbes = liquid.querySelectorAll('.microbe');
+          microbes.forEach(m => {
+            m.classList.add("spoiled");
+            m.classList.remove("dead");
+          });
+        } else {
+          let microbes = liquid.querySelectorAll('.microbe');
+          microbes.forEach(m => {
+            m.classList.remove("dead", "spoiled");
+          });
+        }
+        // Out-of-range temperature: reset timer and clear any success messages
+        resetTimer();
+      }
+    }
+
+    // When the user changes the food selection:
+    foodSelect.addEventListener('change', function() {
+      currentProduct = this.value;
+      updateRecommended();
+      resetTimer();
+      // Set slider to 10°C by default
+      tempSlider.value = 10; /* Changed to 10°C */
+      tempValueSpan.textContent = tempSlider.value;
+      updateThermometer();
+      updateLiquidColor();
+      resetMicrobes();
+    });
+
+    // When the temperature slider is adjusted:
+    tempSlider.addEventListener('input', function() {
+      checkTemperature();
+    });
+
+    // Initialize defaults on page load
+    updateRecommended();
+    resetMicrobes();
+    checkTemperature();
+  </script>
+</body>
+</html>
