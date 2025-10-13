@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banked Curve with Friction — Max/Min Safe Speeds (v3)</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      background-color: #f8f9fa;
+      color: #212529;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #app-container {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 1200px;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #controls-panel {
+      background-color: #004d40; /* Dark Teal */
+      color: #e0f2f1;
+      padding: 1.5rem;
+      flex: 1;
+      min-width: 320px;
+      box-sizing: border-box;
+    }
+
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 2;
+      min-width: 800px;
+      min-height: 600px;
+      background-color: #e9ecef;
+    }
+
+    .header-info {
+        max-width: 1200px;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .header-info h1 {
+        color: #d9534f;
+    }
+    
+    .header-info code {
+        background-color: #e9ecef;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+
+    .control-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #b2dfdb;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      cursor: pointer;
+    }
+    
+    .control-group span {
+        font-family: monospace;
+        font-size: 1em;
+        background-color: #00695c;
+        padding: 6px 10px;
+        border-radius: 4px;
+        min-width: 60px;
+        display: inline-block;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 5px;
+      background-color: #26a69a;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      margin-right: 10px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #00897b;
+    }
+
+    @media (max-width: 1150px) {
+        #app-container {
+            flex-direction: column;
+            border-radius: 8px;
+        }
+        #canvas-container {
+            width: 100%;
+            order: -1;
+        }
+        #controls-panel {
+            min-width: unset;
+            width: 100%;
+        }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header-info">
+    <h1>Banked Curve with Friction — Max/Min Safe Speeds</h1>
+    <p>
+      This simulation models a car on a banked, circular track with friction. The goal is to determine the range of safe speeds [<code>v_min</code>, <code>v_max</code>] to navigate the curve without slipping.
+      <br>The calculations are based on balancing gravitational, normal, frictional, and centripetal forces.
+    </p>
+    <ul>
+        <li><b>Maximum speed (verge of sliding up):</b> <code>v_max = sqrt( R g (sinβ + μs cosβ) / (cosβ − μs sinβ) )</code></li>
+        <li><b>Minimum speed (verge of sliding down):</b> <code>v_min = sqrt( R g (sinβ − μs cosβ) / (cosβ + μs sinβ) )</code></li>
+    </ul>
+  </div>
+
+  <div id="app-container">
+    <div id="controls-panel">
+      <div class="control-group">
+        <label for="betaSlider">Bank Angle (β)</label>
+        <input type="range" id="betaSlider" min="0" max="60" value="25" step="1">
+        <span id="betaValue">25°</span>
+      </div>
+      <div class="control-group">
+        <label for="rSlider">Curve Radius (R)</label>
+        <input type="range" id="rSlider" min="20" max="200" value="50" step="1">
+        <span id="rValue">50 m</span>
+      </div>
+      <div class="control-group">
+        <label for="vSlider">Car Speed (v)</label>
+        <input type="range" id="vSlider" min="0" max="40" value="15" step="0.1">
+        <span id="vValue">15.0 m/s</span>
+      </div>
+      <div class="control-group">
+        <label for="musSlider">Static Friction (μs)</label>
+        <input type="range" id="musSlider" min="0" max="1" value="0.30" step="0.01">
+        <span id="musValue">0.30</span>
+      </div>
+      <div class="control-group">
+        <label for="mukSlider">Kinetic Friction (μk)</label>
+        <input type="range" id="mukSlider" min="0" max="1" value="0.25" step="0.01">
+        <span id="mukValue">0.25</span>
+      </div>
+      <div class="control-group">
+        <label for="mSlider">Car Mass (m)</label>
+        <input type="range" id="mSlider" min="500" max="2000" value="1200" step="10">
+        <span id="mValue">1200 kg</span>
+      </div>
+      <div class="control-group">
+        <button id="playPauseButton">Pause</button>
+        <button id="fbdToggleButton">Toggle FBD</button>
+      </div>
+    </div>
+    <div id="canvas-container"></div>
+  </div>
+
+  <script>
+    const sketch = (p) => {
+      // UI Elements
+      let betaSlider, rSlider, musSlider, mukSlider, mSlider, vSlider;
+      let betaValue, rValue, musValue, mukValue, mValue, vValue;
+      let playPauseButton, fbdToggleButton;
+
+      // State
+      let isPlaying = true;
+      let showFBD = true;
+
+      // Physics Constants and Variables
+      const g = 9.81;
+      const ROAD_HALF_WIDTH_M = 5; // Physical half-width of the road in meters
+      let beta, R, mu_s, mu_k, m, v;
+      let carAngle = 0; // Angle on the circular track (degrees)
+      let slipPosition = 0; // Radial displacement on bank (m), >0 is up/outward
+      let slipVelocity = 0; // Radial velocity on bank (m/s)
+      
+      p.setup = function() {
+        p.createCanvas(800, 600).parent('canvas-container');
+        p.angleMode(p.DEGREES);
+
+        // Link UI elements
+        betaSlider = p.select('#betaSlider');
+        rSlider = p.select('#rSlider');
+        musSlider = p.select('#musSlider');
+        mukSlider = p.select('#mukSlider');
+        mSlider = p.select('#mSlider');
+        vSlider = p.select('#vSlider');
+
+        betaValue = p.select('#betaValue');
+        rValue = p.select('#rValue');
+        musValue = p.select('#musValue');
+        mukValue = p.select('#mukValue');
+        mValue = p.select('#mValue');
+        vValue = p.select('#vValue');
+
+        playPauseButton = p.select('#playPauseButton');
+        fbdToggleButton = p.select('#fbdToggleButton');
+
+        // UI Event Handlers
+        playPauseButton.mousePressed(() => {
+          isPlaying = !isPlaying;
+          playPauseButton.html(isPlaying ? 'Pause' : 'Play');
+        });
+        fbdToggleButton.mousePressed(() => showFBD = !showFBD);
+
+        // Ensure mu_s >= mu_k
+        musSlider.input(() => {
+            if (parseFloat(musSlider.value()) < parseFloat(mukSlider.value())) {
+                mukSlider.value(musSlider.value());
+            }
+        });
+        mukSlider.input(() => {
+            if (parseFloat(mukSlider.value()) > parseFloat(musSlider.value())) {
+                musSlider.value(mukSlider.value());
+            }
+        });
+      };
+
+      p.draw = function() {
+        updateParameters();
+        const physics = calculatePhysics();
+        
+        if (isPlaying) {
+          updateAnimation(physics);
+        }
+
+        drawScene(physics);
+        drawHUD(physics);
+
+        if (showFBD) {
+          drawFBD(physics);
+        }
+      };
+
+      function updateParameters() {
+        beta = parseFloat(betaSlider.value());
+        R = parseFloat(rSlider.value());
+        mu_s = parseFloat(musSlider.value());
+        mu_k = parseFloat(mukSlider.value());
+        m = parseFloat(mSlider.value());
+        v = parseFloat(vSlider.value());
+
+        betaValue.html(`${beta.toFixed(0)}°`);
+        rValue.html(`${R.toFixed(0)} m`);
+        musValue.html(mu_s.toFixed(2));
+        mukValue.html(mu_k.toFixed(2));
+        mValue.html(`${m.toFixed(0)} kg`);
+        vValue.html(`${v.toFixed(1)} m/s`);
+      }
+
+      function calculatePhysics() {
+        const cosB = p.cos(beta);
+        const sinB = p.sin(beta);
+
+        let v_min = 0, v_max = Infinity;
+        // --- v_min calculation (uses static friction mu_s) ---
+        let v_min_num = sinB - mu_s * cosB;
+        if (v_min_num > 0) {
+            let v_min_den = cosB + mu_s * sinB;
+            if (v_min_den > 1e-9) {
+                v_min = p.sqrt(R * g * v_min_num / v_min_den);
+            }
+        }
+        
+        // --- v_max calculation (uses static friction mu_s) ---
+        let v_max_den = cosB - mu_s * sinB;
+        if (v_max_den > 1e-9) {
+          let v_max_num = sinB + mu_s * cosB;
+          v_max = p.sqrt(R * g * v_max_num / v_max_den);
+        }
+
+        // --- Determine car's status and forces ---
+        let status, f, N_val, F_net_lat, a_c;
+        a_c = v * v / R;
+        N_val = m * (g * cosB + a_c * sinB);
+
+        if (v > v_max) {
+          status = "Sliding Up";
+          // Friction is KINETIC and opposes upward slide (points down ramp)
+          f = -mu_k * N_val;
+        } else if (v < v_min) {
+          status = "Sliding Down";
+          // Friction is KINETIC and opposes downward slide (points up ramp)
+          f = mu_k * N_val;
+        } else {
+          status = "No Slip";
+          // Friction is STATIC and adjusts as needed (positive is up the ramp)
+          f = m * (a_c * cosB - g * sinB);
+        }
+        
+        F_net_lat = N_val * sinB - f * cosB;
+
+        return { v_min, v_max, status, N: N_val, f, F_net_lat, a_c, cosB, sinB };
+      }
+      
+      function updateAnimation(physics) {
+        const dt = 1 / (p.frameRate() || 60);
+        
+        let angular_velocity_deg = p.degrees(v / R);
+        carAngle += angular_velocity_deg * dt;
+        carAngle %= 360;
+
+        let a_slip = 0;
+        if (physics.status === "Sliding Up" || physics.status === "Sliding Down") {
+            let F_cent_p = m * physics.a_c * physics.cosB;
+            let F_grav_p = m * g * physics.sinB;
+            let F_net_slip = F_cent_p - F_grav_p + physics.f; // physics.f is the signed kinetic friction
+            a_slip = F_net_slip / m;
+        }
+
+        slipVelocity += a_slip * dt;
+        slipPosition += slipVelocity * dt;
+        
+        if (Math.abs(slipPosition) > ROAD_HALF_WIDTH_M) {
+            slipPosition = 0;
+            slipVelocity = 0;
+        }
+        
+        if (physics.status === "No Slip") {
+            slipPosition *= 0.98;
+            if (Math.abs(slipPosition) < 0.01) slipPosition = 0;
+            slipVelocity = 0;
+        }
+      }
+
+      function drawScene(physics) {
+        p.background(240, 244, 248);
+
+        p.fill(160, 210, 80);
+        p.noStroke();
+        p.rect(0, p.height / 2, p.width, p.height / 2);
+
+        p.push();
+        p.translate(p.width / 2, p.height / 2 + 50);
+        const roadWidth = 80;
+        const perspective = 0.4;
+        const screenR = p.width / 3.5;
+        
+        p.stroke(100); p.strokeWeight(1); p.fill(140);
+        p.ellipse(0, 0, (screenR + roadWidth / 2)*2, (screenR + roadWidth / 2)*2*perspective);
+        p.fill(160, 210, 80);
+        p.ellipse(0, 0, (screenR - roadWidth / 2)*2, (screenR - roadWidth / 2)*2*perspective);
+
+        p.stroke(255, 220, 0); p.strokeWeight(2); p.noFill();
+        p.drawingContext.setLineDash([10, 10]);
+        p.ellipse(0, 0, screenR * 2, screenR * 2 * perspective);
+        p.drawingContext.setLineDash([]);
+
+        let visualSlipOffset = p.map(slipPosition, -ROAD_HALF_WIDTH_M, ROAD_HALF_WIDTH_M, -roadWidth/2, roadWidth/2);
+        let carR = screenR + visualSlipOffset;
+        let carScreenX = carR * p.cos(-carAngle);
+        let carScreenY = carR * p.sin(-carAngle) * perspective;
+        let carScale = p.map(p.sin(-carAngle), -1, 1, 0.6, 1.2);
+
+        p.push();
+        p.translate(carScreenX, carScreenY);
+        p.scale(carScale);
+        
+        // YAW FIX: Rotate car to align with the tangent of the circular path
+        p.rotate(-carAngle - 90);
+        
+        p.stroke(0); p.strokeWeight(1/carScale); p.fill(255, 150, 0);
+        p.rect(-20, -10, 40, 20, 5); // Body
+        p.fill(100, 150, 255, 200); // Windows
+        p.rect(-12, -10, 25, 5, 2);
+        p.pop();
+
+        p.pop();
+      }
+
+      function drawHUD(physics) {
+        p.push();
+        p.fill(0, 0, 0, 150);
+        p.noStroke();
+        p.rect(5, 5, 310, 150, 8);
+
+        p.textFont('monospace', 16);
+        p.fill(255);
+        
+        let v_min_text = physics.v_min.toFixed(2) + ' m/s';
+        let v_max_text = (physics.v_max === Infinity) ? 'No Limit' : physics.v_max.toFixed(2) + ' m/s';
+
+        let hudText = [
+          `Car Speed (v): ${v.toFixed(2)} m/s`,
+          `Min Safe Speed (v_min): ${v_min_text}`,
+          `Max Safe Speed (v_max): ${v_max_text}`,
+          `---`,
+          `Status: ${physics.status}`,
+          `Required a_c (v²/R): ${physics.a_c.toFixed(2)} m/s²`,
+          `Net Lateral Force: ${(physics.F_net_lat / 1000).toFixed(2)} kN`,
+        ];
+
+        let statusColor;
+        if (physics.status === "No Slip") statusColor = p.color(100, 255, 100);
+        else if (physics.status === "Sliding Up") statusColor = p.color(255, 100, 100);
+        else statusColor = p.color(100, 150, 255);
+
+        p.textAlign(p.LEFT, p.TOP);
+        let yPos = 15;
+        for (let i = 0; i < hudText.length; i++) {
+          if (i === 4) p.fill(statusColor); else p.fill(255);
+          p.text(hudText[i], 15, yPos);
+          yPos += 20;
+        }
+
+        p.stroke(200, 0, 200); p.strokeWeight(2);
+        p.line(p.width/2, p.height/2 + 50, p.width/2 + p.width/3.5, p.height/2 + 50);
+        p.fill(200, 0, 200); p.noStroke(); p.text('R (to center)', p.width/2 + 5, p.height/2 + 35);
+        p.pop();
+      }
+
+      function drawFBD(physics) {
+        p.push();
+        p.fill(240, 240, 240, 220); p.stroke(100); p.strokeWeight(1);
+        p.rect(p.width - 260, 10, 250, 250, 10);
+
+        p.translate(p.width - 135, 160);
+        
+        p.fill(0); p.noStroke(); p.textAlign(p.CENTER, p.CENTER);
+        p.text('Free Body Diagram (FBD)', 0, -135);
+        
+        let scale = 0.012;
+
+        drawVector(0, 0, 0, m * g * scale, 'mg', p.color(200, 0, 0));
+        
+        p.rotate(-beta);
+
+        p.stroke(50); p.strokeWeight(4);
+        p.line(-80, 0, 80, 0);
+
+        p.stroke(0); p.strokeWeight(2); p.fill(255, 150, 0);
+        p.rect(-15, -10, 30, 10);
+        
+        drawVector(0, 0, 0, -physics.N * scale, 'N', p.color(0, 150, 0));
+
+        if (Math.abs(physics.f) > 1e-3) {
+            drawVector(0, 0, -physics.f * scale, 0, 'f', p.color(0, 0, 200));
+        }
+        p.pop();
+      }
+      
+      function drawVector(x1, y1, x2, y2, label, col) {
+          p.push();
+          p.stroke(col); p.fill(col); p.strokeWeight(3);
+          p.line(x1, y1, x2, y2);
+          p.push();
+          p.translate(x2, y2);
+          let angle = p.atan2(y2 - y1, x2 - x1);
+          p.rotate(p.degrees(angle));
+          p.triangle(0, 0, -8, 4, -8, -4);
+          p.pop();
+          p.noStroke();
+          p.textAlign(p.CENTER, p.CENTER);
+          p.text(label, x2 * 1.2, y2 * 1.2);
+          p.pop();
+      }
+    };
+
+    new p5(sketch);
+  </script>
+</body>
+</html>
